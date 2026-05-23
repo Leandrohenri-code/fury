@@ -362,4 +362,4 @@ Cada request gera um UUID unico que aparece em todos os logs daquela operacao, d
 [Worker]   Job completed        { jobId }
 ```
 
-Em desenvolvimento os logs saem formatados no terminal. Em producao saem como JSON puro, prontos para qualquer agregador de logs.
+Em desenvolvimento os logs saem formatados no terminal.
