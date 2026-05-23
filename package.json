@@ -1,0 +1,31 @@
+{
+  "name": "fury",
+  "version": "1.0.0",
+  "description": "FURY — Autonomous Paid Traffic Manager · Click Hero",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "worker": "tsx src/modules/takedown/takedown.worker.ts"
+  },
+  "dependencies": {
+    "@bull-board/api": "^6.0.0",
+    "@bull-board/fastify": "^6.0.0",
+    "axios": "^1.6.2",
+    "bullmq": "^5.1.1",
+    "fastify": "^5.8.5",
+    "ioredis": "^5.10.1",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
