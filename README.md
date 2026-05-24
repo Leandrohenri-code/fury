@@ -180,7 +180,7 @@ cd fury
 cp .env.example .env
 
 # Sobe o Redis via Docker
-docker-compose up -d
+docker compose up -d
 
 # Instala as dependências
 npm install
@@ -189,8 +189,18 @@ npm install
 npm run dev
 ```
 
+Quando o servidor subir com sucesso, o terminal vai mostrar:
+
+```
+INFO: FURY is running
+    port: 3000
+    env: "development"
+```
+
 A API fica disponível em `http://localhost:3000`.
 O dashboard da fila fica em `http://localhost:3000/admin/queues`.
+
+> Se o seu Docker for mais antigo e `docker compose` não funcionar, tente `docker-compose up -d` (com hífen).
 
 ### Variáveis de ambiente
 
@@ -234,19 +244,23 @@ Resposta (202):
 
 ### Testar a idempotencia
 
-Mande dois requests iguais ao mesmo tempo. Um vai retornar `enqueued`, o outro vai retornar `duplicate`.
+Para ver o comportamento de duplicata, os dois requests precisam chegar ao servidor ao mesmo tempo, antes de qualquer um terminar de ser processado. Use o `&` para disparar em paralelo no terminal (bash/zsh no Mac ou Linux):
 
 ```bash
-curl -X POST http://localhost:3000/webhook/violation \
+curl -s -X POST http://localhost:3000/webhook/violation \
   -H "Content-Type: application/json" \
   -d '{"adId":"ad_dup","tenantId":"tenant_001","violationType":"BRAND_VIOLATION","severity":"HIGH","detectedAt":"2024-01-15T14:30:00Z"}' &
 
-curl -X POST http://localhost:3000/webhook/violation \
+curl -s -X POST http://localhost:3000/webhook/violation \
   -H "Content-Type: application/json" \
   -d '{"adId":"ad_dup","tenantId":"tenant_001","violationType":"BRAND_VIOLATION","severity":"HIGH","detectedAt":"2024-01-15T14:30:00Z"}' &
 
 wait
 ```
+
+Um vai retornar `"status": "enqueued"` e o outro `"status": "duplicate"`. Nos logs do servidor vai aparecer `[Queue] Duplicate job detected`.
+
+Se mandar os requests um de cada vez com intervalo, o segundo pode retornar `enqueued` de novo porque o primeiro já terminou de processar. Isso é o comportamento correto: a idempotencia bloqueia jobs simultaneos, não reprocessamento depois que o anterior finalizou.
 
 ### Consultar status de um job
 
